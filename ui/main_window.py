@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QH
                              QLabel, QComboBox, QPushButton, QGraphicsDropShadowEffect)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
+from ui.transaction_form import TransactionForm
 
 
 class MainWindow(QMainWindow):
@@ -10,9 +11,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Finance Manager")
         self.setGeometry(100, 100, 600, 500)
-        self.setStyleSheet("background-color: #f3f6f9;")  # Fondo claro
-
-        # Configuración inicial de la interfaz
+        self.setStyleSheet("background-color: #f4f7fc;")  # Fondo suave
         self.setup_ui()
 
     def setup_ui(self):
@@ -21,136 +20,134 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(25)
 
-        # Layout para botones de perfil y configuración
+        # Header layout
         header_layout = QHBoxLayout()
         header_layout.addStretch()
 
-        # Botón de configuración
-        self.btn_settings = QPushButton("⚙️")
-        self.btn_settings.setFixedSize(30, 30)
-        self.btn_settings.setStyleSheet("""
-            QPushButton {
-                color: #ffffff;
-                font-size: 16px;
-                background-color: #2979ff;
-                border-radius: 15px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #1565c0;
-            }
-        """)
-        self.btn_settings.setToolTip("Configuración")
-        header_layout.addWidget(self.btn_settings)
-
-        # Botón de perfil
-        self.btn_profile = QPushButton("👤")
-        self.btn_profile.setFixedSize(30, 30)
-        self.btn_profile.setStyleSheet("""
-            QPushButton {
-                color: #ffffff;
-                font-size: 16px;
-                background-color: #2979ff;
-                border-radius: 15px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #1565c0;
-            }
-        """)
-        self.btn_profile.setToolTip("Preferencias")
+        self.btn_profile = self.create_icon_button("👤", "Profile")
         header_layout.addWidget(self.btn_profile)
+
+        self.btn_settings = self.create_icon_button("⚙️", "Settings")
+        header_layout.addWidget(self.btn_settings)
 
         main_layout.addLayout(header_layout)
 
-        # Título principal
+        # Title label
         title_label = QLabel("Finance Manager")
-        title_label.setFont(QFont("Arial", 24, QFont.Bold))
-        title_label.setStyleSheet("color: #2979ff;")
-        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setFont(QFont("Arial", 28, QFont.Bold))
+        title_label.setStyleSheet("color: #3b5998;")
+        title_label.setAlignment( Qt.AlignCenter)
         main_layout.addWidget(title_label)
 
-        # ComboBox de moneda
-        currency_layout = QVBoxLayout()
-        currency_layout.setContentsMargins(40, 25, 0, 0)
+        # Balance section
+        balance_layout = QVBoxLayout()
+        balance_layout.setContentsMargins(40, 25, 40, 0)
+
+        # Currency selector
 
         self.currency_combo = QComboBox()
         self.currency_combo.addItems(["USD", "EUR", "CUP"])
-        self.currency_combo.setFixedWidth(80)
+        self.currency_combo.setFixedWidth(100)
         self.currency_combo.setStyleSheet("""
-            QComboBox {
-                padding: 4px;
-                font-size: 10px;
-                color: #37474f;
-                border: 1px solid #cfd8dc;
-                border-radius: 4px;
-                background-color: #ffffff;
-            }
-            QComboBox::item:selected {
-                background-color: #bbdefb;
-                color: #000000;
-            }
-        """)
-        currency_layout.addWidget(self.currency_combo)
-        main_layout.addLayout(currency_layout)
+                  QComboBox {
+                      padding: 4px;
+                      font-size: 10px;
+                      color: #37474f;
+                      border: 1px solid #cfd8dc;
+                      border-radius: 4px;
+                      background-color: #ffffff;
+                  }
+                  QComboBox::item:selected {
+                      background-color: #bbdefb;
+                      color: #000000;
+                  }
+              """)
 
-        # Layout para "Saldo" y el valor del saldo
-        balance_layout = QVBoxLayout()
-        balance_layout.setContentsMargins(40, 25, 0, 0)
-
-        balance_label = QLabel("Saldo:")
+        balance_label = QLabel("Balance")
         balance_label.setFont(QFont("Arial", 14, QFont.Bold))
-        balance_label.setStyleSheet("color: #37474f;")
-        balance_layout.addWidget(balance_label)
+        balance_label.setStyleSheet("color: #5a5a5a;")
+        balance_label.setAlignment(Qt.AlignCenter)
+        balance_label.setFixedHeight(30)
 
-        # Valor del saldo
         self.balance_value = QLabel("$12,537")
         self.balance_value.setFont(QFont("Arial", 36, QFont.Bold))
-        self.balance_value.setStyleSheet("color: #4caf50;")  # Verde para saldo positivo
-        balance_layout.addWidget(self.balance_value, alignment=Qt.AlignCenter)
+        self.balance_value.setStyleSheet("color: #4caf50;")
+        self.balance_value.setAlignment(Qt.AlignCenter)
+        self.balance_value.setFixedHeight(50)
+
+        # Alinear el valor y el combo box en el layout horizontal
+
+        balance_layout.addWidget(balance_label)
+        balance_layout.addWidget(self.currency_combo)
         balance_layout.addWidget(self.balance_value)
+
+        balance_layout.setStretchFactor(self.currency_combo, 1)
+        balance_layout.setStretchFactor(balance_label, 1)
+
+
+       # balance_layout.addSpacing(20)  # Espacio entre el combo y el saldo
+
 
         main_layout.addLayout(balance_layout)
 
-        # Botones circulares
-        bottom_layout = QHBoxLayout()
-        bottom_layout.addStretch()
+        # Footer layout for buttons
+        footer_layout = QHBoxLayout()
+        footer_layout.addStretch()
 
-        # Botón de historial
-        self.btn_history = QPushButton("///")
-        self.btn_history.setFixedSize(60, 60)
-        self.btn_history.setFont(QFont("Arial", 24, QFont.Bold))
-        self.btn_history.setStyleSheet("""
-             QPushButton {
-                background-color: #2979ff;
+        self.btn_history = self.create_circle_button("|||", "View your transaction history")
+        footer_layout.addWidget(self.btn_history)
+
+        self.btn_add_record = self.create_circle_button("+", "Add a new transaction")
+        self.btn_add_record.clicked.connect(self.open_new_transaction_form)
+        footer_layout.addWidget(self.btn_add_record)
+
+        main_layout.addLayout(footer_layout)
+
+    def create_icon_button(self, icon: str, tooltip: str) -> QPushButton:
+        button = QPushButton(icon)
+        button.setFixedSize(40, 40)
+        button.setFont(QFont("Arial", 16, QFont.Bold))
+        button.setStyleSheet("""
+            QPushButton {
                 color: #ffffff;
-                border-radius: 30px;
+                background-color: #3b5998;
+                border-radius: 20px;
+                border: none;
             }
             QPushButton:hover {
-                background-color: #1565c0;
+                background-color: #2b4170;
             }
         """)
-        self.btn_history.setToolTip("Historial")
-        bottom_layout.addWidget(self.btn_history)
+        button.setToolTip(tooltip)
+        return button
 
-        # Botón de nuevo registro
-        self.btn_add_record = QPushButton("+")
-        self.btn_add_record.setFixedSize(60, 60)
-        self.btn_add_record.setFont(QFont("Arial", 24, QFont.Bold))
-        self.btn_add_record.setStyleSheet("""
-
+    def create_circle_button(self, text: str, tooltip: str) -> QPushButton:
+        button = QPushButton(text)
+        button.setFixedSize(60, 60)
+        button.setFont(QFont("Arial", 18, QFont.Bold))
+        button.setStyleSheet("""
             QPushButton {
                 background-color: #2979ff;
                 color: #ffffff;
                 border-radius: 30px;
+                box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             }
             QPushButton:hover {
                 background-color: #1565c0;
             }
         """)
-        self.btn_add_record.setToolTip("Nuevo Registro")
-        bottom_layout.addWidget(self.btn_add_record)
+        button.setToolTip(tooltip)
+        return button
 
-        main_layout.addLayout(bottom_layout)
+    def open_new_transaction_form(self):
+        self.transaction_form = TransactionForm()
+        self.transaction_form.show()
 
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
